@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import * as fs from 'fs';
 import * as path from 'path';
+import pool from '@/lib/db';
+
+// 動的レンダリングを強制（毎回シャッフルされるように）
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Fisher-Yatesアルゴリズムで配列をシャッフル
 function shuffleArray<T>(array: T[]): T[] {
@@ -22,39 +27,65 @@ function shuffleQuestions<T>(array: T[]): T[] {
   return shuffled;
 }
 
+// JSONファイルから問題を読み込む
+function loadQuestionsFromJson() {
+  const questionsPath = path.join(process.cwd(), 'data', 'questions.json');
+  const questionsData = fs.readFileSync(questionsPath, 'utf8');
+  const questions = JSON.parse(questionsData);
+
+  // 各問題に元のインデックス+1をidとして追加（シャッフル前のインデックス）
+  const questionsWithId = questions.map((q: any, index: number) => ({
+    id: index + 1,
+    question: q.question,
+    answer: q.answer,
+    choices: q.choices,
+    etymology: q.etymology,
+    meaning: q.meaning,
+    example: q.example
+  }));
+
+  // 問題をシャッフル
+  const shuffledQuestions = shuffleQuestions(questionsWithId);
+
+  // 各問題の選択肢をシャッフル
+  return shuffledQuestions.map((q: any) => ({
+    ...q,
+    choices: shuffleArray(q.choices)
+  }));
+}
+
+// データベースから問題を読み込む
+async function loadQuestionsFromDB() {
+  const [rows] = (await pool.query(
+    'SELECT id, question, answer, choices, etymology, meaning, example FROM questions ORDER BY RAND()'
+  )) as any[];
+
+  // JSON形式のchoicesをパースしてシャッフル
+  const questions = rows.map((row: any) => {
+    const choices = typeof row.choices === 'string' ? JSON.parse(row.choices) : row.choices;
+    return {
+      ...row,
+      choices: shuffleArray(choices)
+    };
+  });
+
+  return questions;
+}
+
 export async function GET() {
   try {
-    // JSONファイルから問題を読み込む
-    const questionsPath = path.join(process.cwd(), 'data', 'questions.json');
-    const questionsData = fs.readFileSync(questionsPath, 'utf8');
-    const questions = JSON.parse(questionsData);
-    
-    // 各問題に元のインデックス+1をidとして追加（シャッフル前のインデックス）
-    const questionsWithId = questions.map((q: any, index: number) => ({
-      id: index + 1,
-      question: q.question,
-      answer: q.answer,
-      choices: q.choices,
-      etymology: q.etymology,
-      meaning: q.meaning,
-      example: q.example,
-    }));
-    
-    // 問題をシャッフル
-    const shuffledQuestions = shuffleQuestions(questionsWithId);
-    
-    // 各問題の選択肢をシャッフル
-    const finalQuestions = shuffledQuestions.map((q: any) => ({
-      ...q,
-      choices: shuffleArray(q.choices),
-    }));
-    
-    return NextResponse.json(finalQuestions);
+    const useDatabase = process.env.USE_DATABASE === 'true';
+
+    let questions;
+    if (useDatabase) {
+      questions = await loadQuestionsFromDB();
+    } else {
+      questions = loadQuestionsFromJson();
+    }
+
+    return NextResponse.json(questions);
   } catch (error) {
     console.error('Failed to load questions:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch questions' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch questions' }, { status: 500 });
   }
 }
