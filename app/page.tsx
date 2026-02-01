@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 
 interface Question {
@@ -23,6 +23,7 @@ export default function Home() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const detailInfoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchQuestions();
@@ -36,6 +37,18 @@ export default function Home() {
       endGame();
     }
   }, [isGameActive, timeLeft]);
+
+  // 回答時に詳細情報までスクロール
+  useEffect(() => {
+    if (isCorrect !== null && detailInfoRef.current) {
+      setTimeout(() => {
+        detailInfoRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  }, [isCorrect]);
 
   const fetchQuestions = async () => {
     try {
@@ -206,7 +219,7 @@ export default function Home() {
               {isCorrect ? (
                 <>
                   <p className={`${styles.correct} ${styles.correctAnimation}`}>正解！</p>
-                <div className={styles.detailInfo}>
+                <div ref={detailInfoRef} className={styles.detailInfo}>
                   {currentQuestion.etymology && (
                     <div className={styles.detailItem}>
                       <strong>【語源】</strong> {currentQuestion.etymology}
@@ -225,7 +238,7 @@ export default function Home() {
             ) : (
               <>
                 <p className={styles.incorrect}>不正解。正解は「{currentQuestion.answer}」です。</p>
-                <div className={styles.detailInfo}>
+                <div ref={detailInfoRef} className={styles.detailInfo}>
                   {currentQuestion.etymology && (
                     <div className={styles.detailItem}>
                       <strong>【語源】</strong> {currentQuestion.etymology}
