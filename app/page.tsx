@@ -188,21 +188,17 @@ export default function Home() {
     }
   };
 
-  const handleAnswerClick = async (selectedAnswer: string) => {
+  const handleAnswerClick = (selectedAnswer: string) => {
     if (!isGameActive || isCorrect !== null) return;
 
     const currentQuestion = questions[currentQuestionIndex];
-    const response = await fetch('/api/check-answer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        questionId: currentQuestion.id,
-        userAnswer: selectedAnswer
-      })
-    });
-
-    const result = await response.json();
-    setIsCorrect(result.correct);
+    
+    // クライアント側で正誤判定（APIリクエスト不要）
+    const correctAnswer = currentQuestion.answer.trim();
+    const normalizedUserAnswer = selectedAnswer.trim();
+    const isAnswerCorrect = correctAnswer.toLowerCase() === normalizedUserAnswer.toLowerCase();
+    
+    setIsCorrect(isAnswerCorrect);
     setUserAnswer(selectedAnswer);
 
     // 回答結果を記録
@@ -211,7 +207,7 @@ export default function Home() {
       question: currentQuestion.question,
       userAnswer: selectedAnswer,
       correctAnswer: currentQuestion.answer,
-      isCorrect: result.correct,
+      isCorrect: isAnswerCorrect,
       choices: currentQuestion.choices,
       etymology: currentQuestion.etymology,
       meaning: currentQuestion.meaning,
@@ -219,7 +215,7 @@ export default function Home() {
     };
     setAnswerResults(prev => [...prev, answerResult]);
 
-    if (result.correct) {
+    if (isAnswerCorrect) {
       setScore(score + 1);
       setTimeout(() => {
         nextQuestion();
