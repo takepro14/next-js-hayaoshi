@@ -282,6 +282,31 @@
   letter-spacing: 0.05em;
 }
 
+.quitButton {
+  background: #ffffff;
+  color: #dc2626;
+  border: 1.5px solid #dc2626;
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.quitButton:hover {
+  background: #dc2626;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px -1px rgba(220, 38, 38, 0.3);
+}
+
+.quitButton:active {
+  transform: translateY(0);
+}
+
 .question {
   font-size: 1.5rem;
   color: #111827;

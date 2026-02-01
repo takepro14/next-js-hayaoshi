@@ -61,6 +61,15 @@ export default function Home() {
     };
   }, []);
 
+  // トップ画面からBGMを再生
+  useEffect(() => {
+    if (!soundEnabled || !bgmRef.current || isLoading) return;
+    
+    bgmRef.current.play().catch((error) => {
+      console.log('BGMの再生に失敗しました:', error);
+    });
+  }, [soundEnabled, isLoading]);
+
   useEffect(() => {
     if (isGameActive && timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -105,19 +114,7 @@ export default function Home() {
     }
   }, [isCorrect, soundEnabled]);
 
-  // ゲーム開始時にBGMを再生、終了時に停止
-  useEffect(() => {
-    if (!soundEnabled || !bgmRef.current) return;
-    
-    if (isGameActive) {
-      bgmRef.current.play().catch((error) => {
-        console.log('BGMの再生に失敗しました:', error);
-      });
-    } else {
-      bgmRef.current.pause();
-      bgmRef.current.currentTime = 0;
-    }
-  }, [isGameActive, soundEnabled]);
+  // BGMは常に再生（ゲーム中もトップ画面でも継続）
 
   const fetchQuestions = async () => {
     try {
@@ -151,9 +148,22 @@ export default function Home() {
     setShowResult(true);
   };
 
+  const handleQuit = () => {
+    if (window.confirm('ゲームを中断しますか？\n現在のスコアは失われます。')) {
+      setIsGameActive(false);
+      setSelectedTimeLimit(null);
+      setShowResult(false);
+      setCurrentQuestionIndex(0);
+      setScore(0);
+      setTimeLeft(60);
+      setUserAnswer('');
+      setIsCorrect(null);
+    }
+  };
+
   const toggleSound = () => {
     setSoundEnabled(!soundEnabled);
-    if (!soundEnabled && bgmRef.current && isGameActive) {
+    if (!soundEnabled && bgmRef.current && !isLoading) {
       bgmRef.current.play().catch((error) => {
         console.log('BGMの再生に失敗しました:', error);
       });
@@ -237,6 +247,16 @@ export default function Home() {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              className={styles.soundToggle}
+              onClick={toggleSound}
+              aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
+              title={soundEnabled ? '音声をオフ' : '音声をオン'}
+            >
+              {soundEnabled ? '🔊' : '🔇'}
+            </button>
+          </div>
           <h1 className={styles.title}>横文字に強くなろう</h1>
           <p className={styles.description}>
             制限時間を選択して、できるだけ多くの横文字の意味を当てよう！
@@ -307,8 +327,17 @@ export default function Home() {
             {soundEnabled ? '🔊' : '🔇'}
           </button>
         </div>
-        <div className={styles.questionNumber}>
-          問題 {currentQuestionIndex + 1} / {questions.length}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div className={styles.questionNumber}>
+            問題 {currentQuestionIndex + 1} / {questions.length}
+          </div>
+          <button
+            className={styles.quitButton}
+            onClick={handleQuit}
+            type="button"
+          >
+            中断
+          </button>
         </div>
         <h2 className={styles.question}>{currentQuestion.question}</h2>
         <div className={styles.choicesContainer}>
