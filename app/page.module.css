@@ -1,0 +1,183 @@
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.timer {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.score {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #27ae60;
+}
+
+.questionNumber {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.question {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  margin-top: 30px;
+}
+
+.input {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.2rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 120px;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.skipButton {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 120px;
+}
+
+.skipButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(149, 165, 166, 0.4);
+}
+
+.skipButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.skipButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.correct {
+  color: #27ae60;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.incorrect {
+  color: #e74c3c;
+  font-size: 1.1rem;
+}
+
+.scoreResult {
+  margin: 30px 0;
+}
+
+.scoreText {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.accuracyText {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 20px;
+}
