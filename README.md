@@ -1,13 +1,13 @@
 # 早押しゲーム
 
-Next.jsとTypeScriptで作成されたシンプルな早押しクイズゲームです。
+Next.js と TypeScript で作成されたシンプルな早押しクイズゲームです。
 
 ## 機能
 
-- 制限時間30秒で問題に答える早押しゲーム
-- MySQLデータベースに問題を保存
-- Docker Composeで開発環境を構築
-- シンプルで使いやすいUI
+- 制限時間 30 秒で問題に答える早押しゲーム
+- MySQL データベースに問題を保存
+- Docker Compose で開発環境を構築
+- シンプルで使いやすい UI
 
 ## セットアップ
 
@@ -29,7 +29,7 @@ DB_PASSWORD=hayaoshi_password
 DB_NAME=hayaoshi
 ```
 
-### 3. Docker ComposeでMySQLを起動
+### 3. Docker Compose で MySQL を起動
 
 ```bash
 docker compose up -d

@@ -17,12 +17,19 @@ async function migrate() {
   });
 
   try {
+    // 既存のテーブルを削除（開発環境用）
+    await connection.query('DROP TABLE IF EXISTS questions');
+
     // テーブル作成
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS questions (
+      CREATE TABLE questions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         question TEXT NOT NULL,
         answer VARCHAR(255) NOT NULL,
+        choices JSON NOT NULL,
+        etymology TEXT,
+        meaning TEXT NOT NULL,
+        example TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);

@@ -24,10 +24,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const correctAnswer = rows[0].answer.toLowerCase().trim();
-    const normalizedUserAnswer = userAnswer.toLowerCase().trim();
+    const correctAnswer = rows[0].answer.trim();
+    const normalizedUserAnswer = userAnswer.trim();
 
-    const isCorrect = correctAnswer === normalizedUserAnswer;
+    // 4択形式なので、大文字小文字を区別せずに比較
+    const isCorrect = correctAnswer.toLowerCase() === normalizedUserAnswer.toLowerCase();
 
     return NextResponse.json({ correct: isCorrect });
   } catch (error) {

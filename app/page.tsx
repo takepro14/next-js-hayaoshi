@@ -7,6 +7,10 @@ interface Question {
   id: number;
   question: string;
   answer: string;
+  choices: string[];
+  etymology?: string;
+  meaning: string;
+  example?: string;
 }
 
 export default function Home() {
@@ -14,7 +18,7 @@ export default function Home() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [isGameActive, setIsGameActive] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -49,7 +53,7 @@ export default function Home() {
     if (questions.length === 0) return;
     setCurrentQuestionIndex(0);
     setScore(0);
-    setTimeLeft(30);
+    setTimeLeft(60);
     setIsGameActive(true);
     setUserAnswer('');
     setIsCorrect(null);
@@ -61,9 +65,8 @@ export default function Home() {
     setShowResult(true);
   };
 
-  const handleAnswerSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isGameActive || userAnswer.trim() === '') return;
+  const handleAnswerClick = async (selectedAnswer: string) => {
+    if (!isGameActive || isCorrect !== null) return;
 
     const currentQuestion = questions[currentQuestionIndex];
     const response = await fetch('/api/check-answer', {
@@ -71,22 +74,23 @@ export default function Home() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         questionId: currentQuestion.id,
-        userAnswer: userAnswer.trim(),
-      }),
+        userAnswer: selectedAnswer
+      })
     });
 
     const result = await response.json();
     setIsCorrect(result.correct);
+    setUserAnswer(selectedAnswer);
 
     if (result.correct) {
       setScore(score + 1);
       setTimeout(() => {
         nextQuestion();
-      }, 1000);
+      }, 3000);
     } else {
       setTimeout(() => {
         nextQuestion();
-      }, 1500);
+      }, 3500);
     }
   };
 
@@ -98,10 +102,6 @@ export default function Home() {
     } else {
       endGame();
     }
-  };
-
-  const skipQuestion = () => {
-    nextQuestion();
   };
 
   if (isLoading) {
@@ -118,7 +118,9 @@ export default function Home() {
         <div className={styles.card}>
           <h1 className={styles.title}>ゲーム終了！</h1>
           <div className={styles.scoreResult}>
-            <p className={styles.scoreText}>正解数: {score} / {questions.length}</p>
+            <p className={styles.scoreText}>
+              正解数: {score} / {questions.length}
+            </p>
             <p className={styles.accuracyText}>
               正答率: {Math.round((score / questions.length) * 100)}%
             </p>
@@ -135,9 +137,9 @@ export default function Home() {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <h1 className={styles.title}>早押しゲーム</h1>
+          <h1 className={styles.title}>横文字に強くなろう</h1>
           <p className={styles.description}>
-            制限時間30秒でできるだけ多くの問題に正解しよう！
+            制限時間1分でできるだけ多くの横文字の意味を当てよう！
           </p>
           <button className={styles.button} onClick={startGame}>
             ゲーム開始
@@ -160,42 +162,75 @@ export default function Home() {
           問題 {currentQuestionIndex + 1} / {questions.length}
         </div>
         <h2 className={styles.question}>{currentQuestion.question}</h2>
-        <form onSubmit={handleAnswerSubmit} className={styles.form}>
-          <input
-            type="text"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            placeholder="答えを入力..."
-            className={styles.input}
-            autoFocus
-            disabled={isCorrect !== null}
-          />
-          <div className={styles.buttonGroup}>
-            <button
-              type="submit"
-              className={styles.button}
-              disabled={isCorrect !== null || userAnswer.trim() === ''}
-            >
-              回答
-            </button>
-            <button
-              type="button"
-              className={styles.skipButton}
-              onClick={skipQuestion}
-              disabled={isCorrect !== null}
-            >
-              スキップ
-            </button>
-          </div>
-        </form>
+        <div className={styles.choicesContainer}>
+          {currentQuestion.choices.map((choice, index) => {
+            const isSelected = userAnswer === choice;
+            const isCorrectChoice = choice === currentQuestion.answer;
+            let buttonClass = styles.choiceButton;
+
+            if (isCorrect !== null) {
+              if (isCorrectChoice) {
+                buttonClass = styles.choiceButtonCorrect;
+              } else if (isSelected && !isCorrectChoice) {
+                buttonClass = styles.choiceButtonIncorrect;
+              } else {
+                buttonClass = styles.choiceButtonDisabled;
+              }
+            }
+
+            return (
+              <button
+                key={index}
+                type="button"
+                className={buttonClass}
+                onClick={() => handleAnswerClick(choice)}
+                disabled={isCorrect !== null}
+              >
+                {choice}
+              </button>
+            );
+          })}
+        </div>
         {isCorrect !== null && (
           <div className={styles.feedback}>
             {isCorrect ? (
-              <p className={styles.correct}>正解！</p>
+              <>
+                <p className={styles.correct}>正解！</p>
+                <div className={styles.detailInfo}>
+                  {currentQuestion.etymology && (
+                    <div className={styles.detailItem}>
+                      <strong>【語源】</strong> {currentQuestion.etymology}
+                    </div>
+                  )}
+                  <div className={styles.detailItem}>
+                    <strong>【意味】</strong> {currentQuestion.meaning}
+                  </div>
+                  {currentQuestion.example && (
+                    <div className={styles.detailItem}>
+                      <strong>【例文】</strong> {currentQuestion.example}
+                    </div>
+                  )}
+                </div>
+              </>
             ) : (
-              <p className={styles.incorrect}>
-                不正解。正解は「{currentQuestion.answer}」です。
-              </p>
+              <>
+                <p className={styles.incorrect}>不正解。正解は「{currentQuestion.answer}」です。</p>
+                <div className={styles.detailInfo}>
+                  {currentQuestion.etymology && (
+                    <div className={styles.detailItem}>
+                      <strong>【語源】</strong> {currentQuestion.etymology}
+                    </div>
+                  )}
+                  <div className={styles.detailItem}>
+                    <strong>【意味】</strong> {currentQuestion.meaning}
+                  </div>
+                  {currentQuestion.example && (
+                    <div className={styles.detailItem}>
+                      <strong>【例文】</strong> {currentQuestion.example}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )}

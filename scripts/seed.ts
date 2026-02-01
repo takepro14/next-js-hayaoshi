@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import { config } from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 // .env.localファイルを読み込む
 config({ path: path.resolve(process.cwd(), '.env.local') });
@@ -11,31 +12,29 @@ async function seed() {
     port: parseInt(process.env.DB_PORT || '3306'),
     user: process.env.DB_USER || 'hayaoshi_user',
     password: process.env.DB_PASSWORD || 'hayaoshi_password',
-    database: process.env.DB_NAME || 'hayaoshi',
+    database: process.env.DB_NAME || 'hayaoshi'
   });
 
   try {
     // 既存のデータを削除
     await connection.query('DELETE FROM questions');
 
-    // 初期問題データ
-    const questions = [
-      { question: '日本の首都は？', answer: '東京' },
-      { question: '1+1は？', answer: '2' },
-      { question: '世界で一番高い山は？', answer: 'エベレスト' },
-      { question: 'リンゴを英語で？', answer: 'apple' },
-      { question: '日本の国花は？', answer: '桜' },
-      { question: '太陽系の惑星の数は？', answer: '8' },
-      { question: '日本の人口は約何億人？', answer: '1.2' },
-      { question: '1週間は何日？', answer: '7' },
-      { question: '日本の最高峰は？', answer: '富士山' },
-      { question: '水の化学式は？', answer: 'H2O' },
-    ];
+    // JSONファイルから問題データを読み込む
+    const questionsPath = path.resolve(process.cwd(), 'data', 'questions.json');
+    const questionsData = fs.readFileSync(questionsPath, 'utf8');
+    const questions = JSON.parse(questionsData);
 
     for (const q of questions) {
       await connection.query(
-        'INSERT INTO questions (question, answer) VALUES (?, ?)',
-        [q.question, q.answer]
+        'INSERT INTO questions (question, answer, choices, etymology, meaning, example) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          q.question,
+          q.answer,
+          JSON.stringify(q.choices),
+          q.etymology,
+          q.meaning,
+          q.example
+        ]
       );
     }
 
