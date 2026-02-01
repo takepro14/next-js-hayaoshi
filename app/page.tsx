@@ -19,6 +19,7 @@ export default function Home() {
   const [userAnswer, setUserAnswer] = useState('');
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [selectedTimeLimit, setSelectedTimeLimit] = useState<number | null>(null);
   const [isGameActive, setIsGameActive] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -130,11 +131,15 @@ export default function Home() {
     }
   };
 
+  const selectTimeLimit = (seconds: number) => {
+    setSelectedTimeLimit(seconds);
+  };
+
   const startGame = () => {
-    if (questions.length === 0) return;
+    if (questions.length === 0 || selectedTimeLimit === null) return;
     setCurrentQuestionIndex(0);
     setScore(0);
-    setTimeLeft(60);
+    setTimeLeft(selectedTimeLimit);
     setIsGameActive(true);
     setUserAnswer('');
     setIsCorrect(null);
@@ -217,7 +222,10 @@ export default function Home() {
               正答率: {Math.round((score / questions.length) * 100)}%
             </p>
           </div>
-          <button className={styles.button} onClick={startGame}>
+          <button className={styles.button} onClick={() => {
+            setSelectedTimeLimit(null);
+            setShowResult(false);
+          }}>
             もう一度遊ぶ
           </button>
         </div>
@@ -231,11 +239,50 @@ export default function Home() {
         <div className={styles.card}>
           <h1 className={styles.title}>横文字に強くなろう</h1>
           <p className={styles.description}>
-            制限時間1分でできるだけ多くの横文字の意味を当てよう！
+            制限時間を選択して、できるだけ多くの横文字の意味を当てよう！
           </p>
-          <button className={styles.button} onClick={startGame}>
-            ゲーム開始
-          </button>
+          {selectedTimeLimit === null ? (
+            <div className={styles.modeSelection}>
+              <h3 className={styles.modeTitle}>時間制限を選択</h3>
+              <div className={styles.modeButtons}>
+                <button
+                  className={styles.modeButton}
+                  onClick={() => selectTimeLimit(30)}
+                >
+                  30秒
+                </button>
+                <button
+                  className={styles.modeButton}
+                  onClick={() => selectTimeLimit(60)}
+                >
+                  1分
+                </button>
+                <button
+                  className={styles.modeButton}
+                  onClick={() => selectTimeLimit(120)}
+                >
+                  2分
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.modeConfirmation}>
+              <p className={styles.modeInfo}>
+                選択した時間: <strong>{selectedTimeLimit}秒</strong>
+              </p>
+              <div className={styles.modeActions}>
+                <button className={styles.button} onClick={startGame}>
+                  ゲーム開始
+                </button>
+                <button
+                  className={styles.buttonSecondary}
+                  onClick={() => setSelectedTimeLimit(null)}
+                >
+                  時間を変更
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
