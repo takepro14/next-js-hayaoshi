@@ -13,6 +13,18 @@ interface Question {
   example?: string;
 }
 
+interface AnswerResult {
+  questionId: number;
+  question: string;
+  userAnswer: string;
+  correctAnswer: string;
+  isCorrect: boolean;
+  choices: string[];
+  etymology?: string;
+  meaning: string;
+  example?: string;
+}
+
 export default function Home() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -23,6 +35,8 @@ export default function Home() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [showDetailResult, setShowDetailResult] = useState(false);
+  const [answerResults, setAnswerResults] = useState<AnswerResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const detailInfoRef = useRef<HTMLDivElement>(null);
@@ -141,6 +155,8 @@ export default function Home() {
     setUserAnswer('');
     setIsCorrect(null);
     setShowResult(false);
+    setShowDetailResult(false);
+    setAnswerResults([]);
   };
 
   const endGame = () => {
@@ -189,6 +205,20 @@ export default function Home() {
     setIsCorrect(result.correct);
     setUserAnswer(selectedAnswer);
 
+    // 回答結果を記録
+    const answerResult: AnswerResult = {
+      questionId: currentQuestion.id,
+      question: currentQuestion.question,
+      userAnswer: selectedAnswer,
+      correctAnswer: currentQuestion.answer,
+      isCorrect: result.correct,
+      choices: currentQuestion.choices,
+      etymology: currentQuestion.etymology,
+      meaning: currentQuestion.meaning,
+      example: currentQuestion.example,
+    };
+    setAnswerResults(prev => [...prev, answerResult]);
+
     if (result.correct) {
       setScore(score + 1);
       setTimeout(() => {
@@ -220,24 +250,112 @@ export default function Home() {
   }
 
   if (showResult) {
+    if (showDetailResult) {
+      // 詳細結果画面
+      const correctAnswers = answerResults.filter(r => r.isCorrect);
+      const incorrectAnswers = answerResults.filter(r => !r.isCorrect);
+      
+      return (
+        <div className={styles.container}>
+          <div className={styles.card}>
+            <h1 className={styles.title}>結果発表</h1>
+            
+            {/* 正解した問題 */}
+            {correctAnswers.length > 0 && (
+              <div className={styles.resultSection}>
+                <h2 className={styles.resultSectionTitle}>
+                  ✓ 正解 ({correctAnswers.length}問)
+                </h2>
+                <div className={styles.resultList}>
+                  {correctAnswers.map((result, index) => (
+                    <div key={index} className={styles.resultItem}>
+                      <div className={styles.resultItemHeader}>
+                        <span className={styles.resultNumber}>Q{index + 1}</span>
+                        <span className={styles.resultStatusCorrect}>✓ 正解</span>
+                      </div>
+                      <p className={styles.resultQuestion}>{result.question}</p>
+                      <div className={styles.resultAnswer}>
+                        <strong>あなたの回答:</strong> {result.userAnswer}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 不正解だった問題 */}
+            {incorrectAnswers.length > 0 && (
+              <div className={styles.resultSection}>
+                <h2 className={styles.resultSectionTitle}>
+                  ✗ 不正解 ({incorrectAnswers.length}問)
+                </h2>
+                <div className={styles.resultList}>
+                  {incorrectAnswers.map((result, index) => (
+                    <div key={index} className={styles.resultItem}>
+                      <div className={styles.resultItemHeader}>
+                        <span className={styles.resultNumber}>Q{correctAnswers.length + index + 1}</span>
+                        <span className={styles.resultStatusIncorrect}>✗ 不正解</span>
+                      </div>
+                      <p className={styles.resultQuestion}>{result.question}</p>
+                      <div className={styles.resultAnswer}>
+                        <strong>あなたの回答:</strong> <span className={styles.incorrectAnswer}>{result.userAnswer}</span>
+                      </div>
+                      <div className={styles.resultAnswer}>
+                        <strong>正解:</strong> <span className={styles.correctAnswer}>{result.correctAnswer}</span>
+                      </div>
+                      {result.meaning && (
+                        <div className={styles.resultDetail}>
+                          <strong>【意味】</strong> {result.meaning}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.resultActions}>
+              <button className={styles.button} onClick={() => setShowDetailResult(false)}>
+                サマリーに戻る
+              </button>
+              <button className={styles.buttonSecondary} onClick={() => {
+                setSelectedTimeLimit(null);
+                setShowResult(false);
+                setShowDetailResult(false);
+              }}>
+                もう一度遊ぶ
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // サマリー画面
     return (
       <div className={styles.container}>
         <div className={styles.card}>
           <h1 className={styles.title}>ゲーム終了！</h1>
           <div className={styles.scoreResult}>
             <p className={styles.scoreText}>
-              正解数: {score} / {questions.length}
+              正解数: {score} / {answerResults.length}
             </p>
             <p className={styles.accuracyText}>
-              正答率: {Math.round((score / questions.length) * 100)}%
+              正答率: {answerResults.length > 0 ? Math.round((score / answerResults.length) * 100) : 0}%
             </p>
           </div>
-          <button className={styles.button} onClick={() => {
-            setSelectedTimeLimit(null);
-            setShowResult(false);
-          }}>
-            もう一度遊ぶ
-          </button>
+          <div className={styles.resultActions}>
+            <button className={styles.button} onClick={() => setShowDetailResult(true)}>
+              詳細を見る
+            </button>
+            <button className={styles.buttonSecondary} onClick={() => {
+              setSelectedTimeLimit(null);
+              setShowResult(false);
+              setShowDetailResult(false);
+            }}>
+              もう一度遊ぶ
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -592,6 +592,133 @@
   transform: translateY(0);
 }
 
+.resultActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.resultSection {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.resultSectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resultItem {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #d1d5db;
+}
+
+.resultItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.resultNumber {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultStatusCorrect {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #059669;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultStatusIncorrect {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #dc2626;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultQuestion {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultAnswer {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultAnswer strong {
+  color: #374151;
+}
+
+.incorrectAnswer {
+  color: #dc2626;
+  text-decoration: line-through;
+}
+
+.correctAnswer {
+  color: #059669;
+  font-weight: 600;
+}
+
+.resultDetail {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+}
+
+.resultDetail strong {
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  .resultActions {
+    gap: 10px;
+  }
+
+  .resultSection {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .resultSectionTitle {
+    font-size: 1.125rem;
+  }
+
+  .resultItem {
+    padding: 12px;
+  }
+
+  .resultQuestion {
+    font-size: 0.9375rem;
+  }
+}
+
 @media (max-width: 768px) {
   .modeButtons {
     grid-template-columns: 1fr;
