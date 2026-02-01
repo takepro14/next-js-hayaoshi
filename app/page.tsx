@@ -23,10 +23,41 @@ export default function Home() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const detailInfoRef = useRef<HTMLDivElement>(null);
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const correctSoundRef = useRef<HTMLAudioElement | null>(null);
+  const incorrectSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     fetchQuestions();
+    
+    // 音声ファイルを初期化
+    bgmRef.current = new Audio('/sounds/bgm.mp3');
+    bgmRef.current.loop = true;
+    bgmRef.current.volume = 0.3;
+    
+    correctSoundRef.current = new Audio('/sounds/correct.mp3');
+    correctSoundRef.current.volume = 0.5;
+    
+    incorrectSoundRef.current = new Audio('/sounds/incorrect.mp3');
+    incorrectSoundRef.current.volume = 0.5;
+    
+    return () => {
+      // クリーンアップ
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current = null;
+      }
+      if (correctSoundRef.current) {
+        correctSoundRef.current.pause();
+        correctSoundRef.current = null;
+      }
+      if (incorrectSoundRef.current) {
+        incorrectSoundRef.current.pause();
+        incorrectSoundRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -56,6 +87,37 @@ export default function Home() {
     }
   }, [isCorrect]);
 
+  // 正解/不正解時に効果音を再生
+  useEffect(() => {
+    if (!soundEnabled || isCorrect === null) return;
+    
+    if (isCorrect && correctSoundRef.current) {
+      correctSoundRef.current.currentTime = 0;
+      correctSoundRef.current.play().catch((error) => {
+        console.log('効果音の再生に失敗しました:', error);
+      });
+    } else if (!isCorrect && incorrectSoundRef.current) {
+      incorrectSoundRef.current.currentTime = 0;
+      incorrectSoundRef.current.play().catch((error) => {
+        console.log('効果音の再生に失敗しました:', error);
+      });
+    }
+  }, [isCorrect, soundEnabled]);
+
+  // ゲーム開始時にBGMを再生、終了時に停止
+  useEffect(() => {
+    if (!soundEnabled || !bgmRef.current) return;
+    
+    if (isGameActive) {
+      bgmRef.current.play().catch((error) => {
+        console.log('BGMの再生に失敗しました:', error);
+      });
+    } else {
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
+  }, [isGameActive, soundEnabled]);
+
   const fetchQuestions = async () => {
     try {
       const response = await fetch('/api/questions');
@@ -82,6 +144,17 @@ export default function Home() {
   const endGame = () => {
     setIsGameActive(false);
     setShowResult(true);
+  };
+
+  const toggleSound = () => {
+    setSoundEnabled(!soundEnabled);
+    if (!soundEnabled && bgmRef.current && isGameActive) {
+      bgmRef.current.play().catch((error) => {
+        console.log('BGMの再生に失敗しました:', error);
+      });
+    } else if (soundEnabled && bgmRef.current) {
+      bgmRef.current.pause();
+    }
   };
 
   const handleAnswerClick = async (selectedAnswer: string) => {
@@ -178,6 +251,14 @@ export default function Home() {
           <div className={`${styles.score} ${isCorrect === true ? styles.scoreIncrease : ''}`}>
             スコア: {score}
           </div>
+          <button
+            className={styles.soundToggle}
+            onClick={toggleSound}
+            aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
+            title={soundEnabled ? '音声をオフ' : '音声をオン'}
+          >
+            {soundEnabled ? '🔊' : '🔇'}
+          </button>
         </div>
         <div className={styles.questionNumber}>
           問題 {currentQuestionIndex + 1} / {questions.length}
