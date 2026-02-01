@@ -38,6 +38,12 @@ export default function Home() {
     }
   }, [isGameActive, timeLeft]);
 
+  // 問題が変わったときに状態をリセット
+  useEffect(() => {
+    setUserAnswer('');
+    setIsCorrect(null);
+  }, [currentQuestionIndex]);
+
   // 回答時に詳細情報までスクロール
   useEffect(() => {
     if (isCorrect !== null && detailInfoRef.current) {
@@ -195,7 +201,7 @@ export default function Home() {
 
             return (
               <button
-                key={index}
+                key={`${currentQuestionIndex}-${index}-${choice}`}
                 type="button"
                 className={buttonClass}
                 onClick={() => handleAnswerClick(choice)}
