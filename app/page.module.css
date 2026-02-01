@@ -12,6 +12,41 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
   text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.cardCorrect {
+  animation: correctPulse 0.6s ease;
+  box-shadow: 0 0 30px rgba(5, 150, 105, 0.4), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cardIncorrect {
+  animation: shake 0.5s ease;
+}
+
+@keyframes correctPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -58,6 +93,24 @@
   font-weight: 600;
   color: #059669;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.scoreIncrease {
+  animation: scorePop 0.5s ease;
+}
+
+@keyframes scorePop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+    color: #10b981;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .questionNumber {
@@ -133,6 +186,51 @@
   align-items: center;
   justify-content: center;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+  animation: correctButtonPop 0.4s ease, correctButtonGlow 1.5s ease infinite;
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.choiceButtonCorrect::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shine 1.5s ease infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes correctButtonGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(5, 150, 105, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(5, 150, 105, 0.8);
+  }
+}
+
+@keyframes correctButtonPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .choiceButtonIncorrect {
@@ -149,6 +247,19 @@
   align-items: center;
   justify-content: center;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+  animation: incorrectButtonShake 0.4s ease;
+}
+
+@keyframes incorrectButtonShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
 }
 
 .choiceButtonDisabled {
@@ -249,6 +360,25 @@
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
 }
 
+.correctAnimation {
+  animation: correctTextPop 0.5s ease;
+  display: inline-block;
+}
+
+@keyframes correctTextPop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .incorrect {
   color: #dc2626;
   font-size: 1rem;
@@ -298,4 +428,129 @@
   font-weight: 500;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
   letter-spacing: 0.02em;
+}
+
+.particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: #059669;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(5, 150, 105, 0.8);
+}
+
+.particle:nth-child(1) { animation: particle1 1s ease-out forwards; }
+.particle:nth-child(2) { animation: particle2 1s ease-out forwards; }
+.particle:nth-child(3) { animation: particle3 1s ease-out forwards; }
+.particle:nth-child(4) { animation: particle4 1s ease-out forwards; }
+.particle:nth-child(5) { animation: particle5 1s ease-out forwards; }
+.particle:nth-child(6) { animation: particle6 1s ease-out forwards; }
+.particle:nth-child(7) { animation: particle7 1s ease-out forwards; }
+.particle:nth-child(8) { animation: particle8 1s ease-out forwards; }
+.particle:nth-child(9) { animation: particle9 1s ease-out forwards; }
+.particle:nth-child(10) { animation: particle10 1s ease-out forwards; }
+.particle:nth-child(11) { animation: particle11 1s ease-out forwards; }
+.particle:nth-child(12) { animation: particle12 1s ease-out forwards; }
+.particle:nth-child(13) { animation: particle13 1s ease-out forwards; }
+.particle:nth-child(14) { animation: particle14 1s ease-out forwards; }
+.particle:nth-child(15) { animation: particle15 1s ease-out forwards; }
+.particle:nth-child(16) { animation: particle16 1s ease-out forwards; }
+.particle:nth-child(17) { animation: particle17 1s ease-out forwards; }
+.particle:nth-child(18) { animation: particle18 1s ease-out forwards; }
+.particle:nth-child(19) { animation: particle19 1s ease-out forwards; }
+.particle:nth-child(20) { animation: particle20 1s ease-out forwards; }
+
+@keyframes particle1 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(70px, -70px) scale(1); opacity: 0; }
+}
+@keyframes particle2 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(100px, 0px) scale(1); opacity: 0; }
+}
+@keyframes particle3 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(70px, 70px) scale(1); opacity: 0; }
+}
+@keyframes particle4 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(0px, 100px) scale(1); opacity: 0; }
+}
+@keyframes particle5 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-70px, 70px) scale(1); opacity: 0; }
+}
+@keyframes particle6 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-100px, 0px) scale(1); opacity: 0; }
+}
+@keyframes particle7 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-70px, -70px) scale(1); opacity: 0; }
+}
+@keyframes particle8 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(0px, -100px) scale(1); opacity: 0; }
+}
+@keyframes particle9 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(85px, -50px) scale(1); opacity: 0; }
+}
+@keyframes particle10 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(50px, -85px) scale(1); opacity: 0; }
+}
+@keyframes particle11 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-85px, -50px) scale(1); opacity: 0; }
+}
+@keyframes particle12 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50px, -85px) scale(1); opacity: 0; }
+}
+@keyframes particle13 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(85px, 50px) scale(1); opacity: 0; }
+}
+@keyframes particle14 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(50px, 85px) scale(1); opacity: 0; }
+}
+@keyframes particle15 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-85px, 50px) scale(1); opacity: 0; }
+}
+@keyframes particle16 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50px, 85px) scale(1); opacity: 0; }
+}
+@keyframes particle17 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(60px, -60px) scale(1); opacity: 0; }
+}
+@keyframes particle18 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-60px, -60px) scale(1); opacity: 0; }
+}
+@keyframes particle19 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(60px, 60px) scale(1); opacity: 0; }
+}
+@keyframes particle20 {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-60px, 60px) scale(1); opacity: 0; }
 }

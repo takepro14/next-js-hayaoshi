@@ -153,10 +153,12 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <div className={`${styles.card} ${isCorrect === true ? styles.cardCorrect : isCorrect === false ? styles.cardIncorrect : ''}`}>
         <div className={styles.header}>
           <div className={styles.timer}>残り時間: {timeLeft}秒</div>
-          <div className={styles.score}>スコア: {score}</div>
+          <div className={`${styles.score} ${isCorrect === true ? styles.scoreIncrease : ''}`}>
+            スコア: {score}
+          </div>
         </div>
         <div className={styles.questionNumber}>
           問題 {currentQuestionIndex + 1} / {questions.length}
@@ -192,10 +194,18 @@ export default function Home() {
           })}
         </div>
         {isCorrect !== null && (
-          <div className={styles.feedback}>
-            {isCorrect ? (
-              <>
-                <p className={styles.correct}>正解！</p>
+          <>
+            {isCorrect && (
+              <div className={styles.particles}>
+                {[...Array(20)].map((_, i) => (
+                  <div key={i} className={styles.particle} />
+                ))}
+              </div>
+            )}
+            <div className={styles.feedback}>
+              {isCorrect ? (
+                <>
+                  <p className={`${styles.correct} ${styles.correctAnimation}`}>正解！</p>
                 <div className={styles.detailInfo}>
                   {currentQuestion.etymology && (
                     <div className={styles.detailItem}>
@@ -232,7 +242,8 @@ export default function Home() {
                 </div>
               </>
             )}
-          </div>
+            </div>
+          </>
         )}
       </div>
     </div>
