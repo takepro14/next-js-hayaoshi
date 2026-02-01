@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,19 +13,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const [rows] = await pool.query(
-      'SELECT answer FROM questions WHERE id = ?',
-      [questionId]
-    ) as any[];
+    // JSONファイルから問題を読み込む
+    const questionsPath = path.join(process.cwd(), 'data', 'questions.json');
+    const questionsData = fs.readFileSync(questionsPath, 'utf8');
+    const questions = JSON.parse(questionsData);
+    
+    // questionIdで問題を検索（idは1ベースのインデックス）
+    const question = questions[questionId - 1];
 
-    if (rows.length === 0) {
+    if (!question) {
       return NextResponse.json(
         { error: 'Question not found' },
         { status: 404 }
       );
     }
 
-    const correctAnswer = rows[0].answer.trim();
+    const correctAnswer = question.answer.trim();
     const normalizedUserAnswer = userAnswer.trim();
 
     // 4択形式なので、大文字小文字を区別せずに比較
@@ -32,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ correct: isCorrect });
   } catch (error) {
-    console.error('Database error:', error);
+    console.error('Failed to check answer:', error);
     return NextResponse.json(
       { error: 'Failed to check answer' },
       { status: 500 }
