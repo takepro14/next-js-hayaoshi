@@ -29,7 +29,7 @@ export default function GameScreen({
   gameMode,
   onAnswerClick,
   onQuit,
-  onToggleSound,
+  onToggleSound
 }: GameScreenProps) {
   const detailInfoRef = useRef<HTMLDivElement>(null);
 
@@ -37,9 +37,9 @@ export default function GameScreen({
   useEffect(() => {
     if (isCorrect !== null && detailInfoRef.current) {
       setTimeout(() => {
-        detailInfoRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
+        detailInfoRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
         });
       }, 100);
     }
@@ -47,11 +47,13 @@ export default function GameScreen({
 
   return (
     <div className={styles.container}>
-      <div className={`${styles.card} ${isCorrect === true ? styles.cardCorrect : isCorrect === false ? styles.cardIncorrect : ''}`}>
+      <div
+        className={`${styles.card} ${
+          isCorrect === true ? styles.cardCorrect : isCorrect === false ? styles.cardIncorrect : ''
+        }`}
+      >
         <div className={styles.header}>
-          {timeLeft !== null && (
-            <div className={styles.timer}>残り時間: {timeLeft}秒</div>
-          )}
+          {timeLeft !== null && <div className={styles.timer}>残り時間: {timeLeft}秒</div>}
           {timeLeft === null && gameMode === 'endless' && (
             <div className={styles.timer}>エンドレスモード</div>
           )}
@@ -70,24 +72,33 @@ export default function GameScreen({
             {soundEnabled ? '🔊' : '🔇'}
           </button>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '12px'
+          }}
+        >
           <div className={styles.questionNumber}>
             問題 {currentQuestionIndex + 1} / {totalQuestions}
           </div>
-          <button
-            className={styles.quitButton}
-            onClick={onQuit}
-            type="button"
-          >
+          <button className={styles.quitButton} onClick={onQuit} type="button">
             中断
           </button>
         </div>
         {currentQuestion?.category && (
-          <div className={styles.category}>
-            {currentQuestion.category}
-          </div>
+          <div className={styles.category}>{currentQuestion.category}</div>
         )}
-        <h2 className={styles.question}>{currentQuestion?.question}</h2>
+        <h2 className={styles.question}>
+          {currentQuestion?.question
+            ?.replace(/\s+のビジネス用語としての意味は？$/g, '')
+            ?.replace(/\s+の意味として正しいのは？$/g, '')
+            ?.replace(/\s+の意味は？$/g, '')
+            ?.replace(/\s+はビジネスでどういう意味？$/g, '')
+            ?.replace(/\s+はビジネスで何を指す？$/g, '')
+            ?.trim()}
+        </h2>
         <div className={styles.choicesContainer}>
           {currentQuestion?.choices?.map((choice, index) => {
             const isSelected = userAnswer === choice;
@@ -148,7 +159,9 @@ export default function GameScreen({
                 </>
               ) : (
                 <>
-                  <p className={styles.incorrect}>不正解。正解は「{currentQuestion?.answer}」です。</p>
+                  <p className={styles.incorrect}>
+                    不正解。正解は「{currentQuestion?.answer}」です。
+                  </p>
                   <div ref={detailInfoRef} className={styles.detailInfo}>
                     {currentQuestion?.etymology && (
                       <div className={styles.detailItem}>

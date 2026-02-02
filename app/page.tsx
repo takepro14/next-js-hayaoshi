@@ -23,7 +23,7 @@ export default function Home() {
   const [showDetailResult, setShowDetailResult] = useState(false);
   const [answerResults, setAnswerResults] = useState<AnswerResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { soundEnabled, toggleSound, startBGM, playCorrectSound, playIncorrectSound } = useSound();
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function Home() {
   // カテゴリーに基づいて問題をフィルタリング
   useEffect(() => {
     if (gameConfig?.selectedCategory) {
-      const filtered = allQuestions.filter(q => q.category === gameConfig.selectedCategory);
+      const filtered = allQuestions.filter((q) => q.category === gameConfig.selectedCategory);
       setQuestions(filtered);
     } else {
       setQuestions(allQuestions);
@@ -96,7 +96,8 @@ export default function Home() {
     if (mode === 'timeAttack' && timeLimit) {
       setGameConfig({ mode, timeLimit, selectedCategory: gameConfig?.selectedCategory });
     } else if (mode === 'timeAttack') {
-      setGameConfig({ mode, selectedCategory: gameConfig?.selectedCategory });
+      // タイムアタックモードを選択した時はデフォルトで30秒を設定
+      setGameConfig({ mode, timeLimit: 30, selectedCategory: gameConfig?.selectedCategory });
     } else {
       setGameConfig({ mode, selectedCategory: gameConfig?.selectedCategory });
     }
@@ -111,14 +112,14 @@ export default function Home() {
   const startGame = () => {
     // カテゴリーに基づいて問題をフィルタリング
     const filteredQuestions = gameConfig?.selectedCategory
-      ? allQuestions.filter(q => q.category === gameConfig.selectedCategory)
+      ? allQuestions.filter((q) => q.category === gameConfig.selectedCategory)
       : allQuestions;
-    
+
     if (filteredQuestions.length === 0 || !gameConfig) {
       alert('選択されたカテゴリーに問題がありません。');
       return;
     }
-    
+
     setQuestions(filteredQuestions);
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -153,12 +154,12 @@ export default function Home() {
     if (!isGameActive || isCorrect !== null) return;
 
     const currentQuestion = questions[currentQuestionIndex];
-    
+
     // クライアント側で正誤判定（APIリクエスト不要）
     const correctAnswer = currentQuestion.answer.trim();
     const normalizedUserAnswer = selectedAnswer.trim();
     const isAnswerCorrect = correctAnswer.toLowerCase() === normalizedUserAnswer.toLowerCase();
-    
+
     setIsCorrect(isAnswerCorrect);
     setUserAnswer(selectedAnswer);
 
@@ -173,9 +174,9 @@ export default function Home() {
       etymology: currentQuestion.etymology,
       meaning: currentQuestion.meaning,
       example: currentQuestion.example,
-      category: currentQuestion.category,
+      category: currentQuestion.category
     };
-    setAnswerResults(prev => [...prev, answerResult]);
+    setAnswerResults((prev) => [...prev, answerResult]);
 
     if (isAnswerCorrect) {
       setScore(score + 1);
@@ -251,7 +252,9 @@ export default function Home() {
   }
 
   // 利用可能なカテゴリー一覧を取得
-  const categories = Array.from(new Set(allQuestions.map(q => q.category).filter(Boolean))) as string[];
+  const categories = Array.from(
+    new Set(allQuestions.map((q) => q.category).filter(Boolean))
+  ) as string[];
 
   if (!isGameActive) {
     return (

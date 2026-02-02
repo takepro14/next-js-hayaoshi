@@ -55,7 +55,7 @@ function loadQuestionsFromJson() {
   }));
 }
 
-  // データベースから問題を読み込む
+// データベースから問題を読み込む
 async function loadQuestionsFromDB() {
   const [rows] = (await pool.query(
     'SELECT id, question, answer, choices, etymology, meaning, example, category FROM questions ORDER BY RAND()'

@@ -20,7 +20,7 @@ export default function StartScreen({
   onSelectCategory,
   onStartGame,
   onToggleSound,
-  onStartBGM,
+  onStartBGM
 }: StartScreenProps) {
   if (gameConfig === null) {
     // モード選択画面
@@ -109,14 +109,14 @@ export default function StartScreen({
             </button>
           </div>
           <h1 className={styles.title}>タイムアタック</h1>
-          <p className={styles.description}>
-            制限時間内にできるだけ多くの問題に答えよう！
-          </p>
+          <p className={styles.description}>制限時間内にできるだけ多くの問題に答えよう！</p>
           <div className={styles.modeSelection}>
-            <h3 className={styles.modeTitle}>カテゴリーを選択（オプション）</h3>
+            <h3 className={styles.modeTitle}>カテゴリー（オプション）</h3>
             <div className={styles.modeButtons}>
               <button
-                className={`${styles.modeButton} ${!gameConfig.selectedCategory ? styles.modeButtonActive : ''}`}
+                className={`${styles.modeButton} ${
+                  !gameConfig.selectedCategory ? styles.modeButtonActive : ''
+                }`}
                 onClick={() => {
                   onStartBGM();
                   onSelectCategory(null);
@@ -127,7 +127,9 @@ export default function StartScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`${styles.modeButton} ${gameConfig.selectedCategory === category ? styles.modeButtonActive : ''}`}
+                  className={`${styles.modeButton} ${
+                    gameConfig.selectedCategory === category ? styles.modeButtonActive : ''
+                  }`}
                   onClick={() => {
                     onStartBGM();
                     onSelectCategory(category);
@@ -137,7 +139,9 @@ export default function StartScreen({
                 </button>
               ))}
             </div>
-            <h3 className={styles.modeTitle} style={{ marginTop: '32px' }}>時間制限を選択</h3>
+            <h3 className={styles.modeTitle} style={{ marginTop: '32px' }}>
+              時間制限を選択
+            </h3>
             <div className={styles.modeButtons}>
               <button
                 className={styles.modeButton}
@@ -220,15 +224,15 @@ export default function StartScreen({
           </button>
         </div>
         <h1 className={styles.title}>{getModeName()}</h1>
-        <p className={styles.description}>
-          {getModeDescription()}
-        </p>
+        <p className={styles.description}>{getModeDescription()}</p>
         <div className={styles.modeConfirmation}>
           <div className={styles.modeSelection}>
-            <h3 className={styles.modeTitle}>カテゴリーを選択（オプション）</h3>
+            <h3 className={styles.modeTitle}>カテゴリー（オプション）</h3>
             <div className={styles.modeButtons}>
               <button
-                className={`${styles.modeButton} ${!gameConfig.selectedCategory ? styles.modeButtonActive : ''}`}
+                className={`${styles.modeButton} ${
+                  !gameConfig.selectedCategory ? styles.modeButtonActive : ''
+                }`}
                 onClick={() => {
                   onStartBGM();
                   onSelectCategory(null);
@@ -239,7 +243,9 @@ export default function StartScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`${styles.modeButton} ${gameConfig.selectedCategory === category ? styles.modeButtonActive : ''}`}
+                  className={`${styles.modeButton} ${
+                    gameConfig.selectedCategory === category ? styles.modeButtonActive : ''
+                  }`}
                   onClick={() => {
                     onStartBGM();
                     onSelectCategory(category);
@@ -250,18 +256,61 @@ export default function StartScreen({
               ))}
             </div>
           </div>
+          {gameConfig.mode === 'timeAttack' && (
+            <div className={styles.modeSelection} style={{ marginTop: '24px' }}>
+              <h3 className={styles.modeTitle}>時間制限</h3>
+              <div className={styles.modeButtons}>
+                <button
+                  className={`${styles.modeButton} ${
+                    gameConfig.timeLimit === 30 ? styles.modeButtonActive : ''
+                  }`}
+                  onClick={() => {
+                    onStartBGM();
+                    onSelectMode('timeAttack', 30);
+                  }}
+                >
+                  30秒
+                </button>
+                <button
+                  className={`${styles.modeButton} ${
+                    gameConfig.timeLimit === 60 ? styles.modeButtonActive : ''
+                  }`}
+                  onClick={() => {
+                    onStartBGM();
+                    onSelectMode('timeAttack', 60);
+                  }}
+                >
+                  1分
+                </button>
+                <button
+                  className={`${styles.modeButton} ${
+                    gameConfig.timeLimit === 120 ? styles.modeButtonActive : ''
+                  }`}
+                  onClick={() => {
+                    onStartBGM();
+                    onSelectMode('timeAttack', 120);
+                  }}
+                >
+                  2分
+                </button>
+              </div>
+            </div>
+          )}
           <div className={styles.modeActions}>
-            <button className={styles.button} onClick={() => {
-              onStartBGM();
-              onStartGame();
-            }}>
+            <button
+              className={styles.button}
+              onClick={() => {
+                onStartBGM();
+                onStartGame();
+              }}
+            >
               ゲーム開始
             </button>
             <button
               className={styles.buttonSecondary}
               onClick={() => onSelectMode(null as any, undefined)}
             >
-              モードを変更
+              モード選択に戻る
             </button>
           </div>
         </div>

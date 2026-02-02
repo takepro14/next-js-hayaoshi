@@ -13,7 +13,7 @@ async function migrate() {
     user: process.env.DB_USER || 'hayaoshi_user',
     password: process.env.DB_PASSWORD || 'hayaoshi_password',
     database: process.env.DB_NAME || 'hayaoshi',
-    multipleStatements: true,
+    multipleStatements: true
   });
 
   try {
