@@ -41,9 +41,7 @@ export default function StartScreen({
             </button>
           </div>
           <h1 className={styles.title}>横文字に強くなろう</h1>
-          <p className={styles.description}>
-            モードを選択して、できるだけ多くの横文字の意味を当てよう！
-          </p>
+          <p className={styles.description}>大人のための横文字トレーニング</p>
           <div className={styles.modeSelection}>
             <h3 className={styles.modeTitle}>モードを選択</h3>
             <div className={styles.modeButtons}>

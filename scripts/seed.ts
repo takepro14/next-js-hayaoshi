@@ -19,27 +19,36 @@ async function seed() {
     // 既存のデータを削除
     await connection.query('DELETE FROM questions');
 
-    // JSONファイルから問題データを読み込む
-    const questionsPath = path.resolve(process.cwd(), 'data', 'questions.json');
-    const questionsData = fs.readFileSync(questionsPath, 'utf8');
-    const questions = JSON.parse(questionsData);
+    // カテゴリーごとのJSONファイルから問題データを読み込む
+    const categoriesDir = path.resolve(process.cwd(), 'data', 'categories');
+    const categoryFiles = fs.readdirSync(categoriesDir).filter((file: string) => file.endsWith('.json'));
+    
+    let totalQuestions = 0;
 
-    for (const q of questions) {
-      await connection.query(
-        'INSERT INTO questions (question, answer, choices, etymology, meaning, example, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [
-          q.question,
-          q.answer,
-          JSON.stringify(q.choices),
-          q.etymology,
-          q.meaning,
-          q.example,
-          q.category || null
-        ]
-      );
+    // 各カテゴリーファイルを読み込む
+    for (const file of categoryFiles) {
+      const filePath = path.join(categoriesDir, file);
+      const fileData = fs.readFileSync(filePath, 'utf8');
+      const questions = JSON.parse(fileData);
+
+      for (const q of questions) {
+        await connection.query(
+          'INSERT INTO questions (question, answer, choices, etymology, meaning, example, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [
+            q.question,
+            q.answer,
+            JSON.stringify(q.choices),
+            q.etymology,
+            q.meaning,
+            q.example,
+            q.category || null
+          ]
+        );
+        totalQuestions++;
+      }
     }
 
-    console.log(`Seeded ${questions.length} questions successfully!`);
+    console.log(`Seeded ${totalQuestions} questions successfully!`);
   } catch (error) {
     console.error('Seed failed:', error);
     process.exit(1);

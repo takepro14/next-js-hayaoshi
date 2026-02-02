@@ -74,16 +74,15 @@ export default function Home() {
     }
   };
 
-  // カテゴリーに基づいて問題をフィルタリング
+  // カテゴリーに基づいて問題をフィルタリング（ゲームがアクティブでない場合のみ）
   useEffect(() => {
-    if (gameConfig?.selectedCategory) {
-      const filtered = allQuestions.filter((q) => q.category === gameConfig.selectedCategory);
-      setQuestions(filtered);
-    } else {
-      setQuestions(allQuestions);
-    }
-    // ゲームがアクティブでない場合のみインデックスをリセット
     if (!isGameActive) {
+      if (gameConfig?.selectedCategory) {
+        const filtered = allQuestions.filter((q) => q.category === gameConfig.selectedCategory);
+        setQuestions(filtered);
+      } else {
+        setQuestions(allQuestions);
+      }
       setCurrentQuestionIndex(0);
     }
   }, [gameConfig?.selectedCategory, allQuestions, isGameActive]);

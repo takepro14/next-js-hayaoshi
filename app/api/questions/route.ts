@@ -27,26 +27,37 @@ function shuffleQuestions<T>(array: T[]): T[] {
   return shuffled;
 }
 
-// JSONファイルから問題を読み込む
+// JSONファイルから問題を読み込む（カテゴリーごとのファイルから）
 function loadQuestionsFromJson() {
-  const questionsPath = path.join(process.cwd(), 'data', 'questions.json');
-  const questionsData = fs.readFileSync(questionsPath, 'utf8');
-  const questions = JSON.parse(questionsData);
+  const categoriesDir = path.join(process.cwd(), 'data', 'categories');
+  const categoryFiles = fs.readdirSync(categoriesDir).filter((file: string) => file.endsWith('.json'));
+  
+  let allQuestions: any[] = [];
+  let idCounter = 1;
 
-  // 各問題に元のインデックス+1をidとして追加（シャッフル前のインデックス）
-  const questionsWithId = questions.map((q: any, index: number) => ({
-    id: index + 1,
-    question: q.question,
-    answer: q.answer,
-    choices: q.choices,
-    etymology: q.etymology,
-    meaning: q.meaning,
-    example: q.example,
-    category: q.category
-  }));
+  // 各カテゴリーファイルを読み込む
+  categoryFiles.forEach((file: string) => {
+    const filePath = path.join(categoriesDir, file);
+    const fileData = fs.readFileSync(filePath, 'utf8');
+    const questions = JSON.parse(fileData);
+    
+    // 各問題にidを追加
+    const questionsWithId = questions.map((q: any) => ({
+      id: idCounter++,
+      question: q.question,
+      answer: q.answer,
+      choices: q.choices,
+      etymology: q.etymology,
+      meaning: q.meaning,
+      example: q.example,
+      category: q.category
+    }));
+    
+    allQuestions = allQuestions.concat(questionsWithId);
+  });
 
   // 問題をシャッフル
-  const shuffledQuestions = shuffleQuestions(questionsWithId);
+  const shuffledQuestions = shuffleQuestions(allQuestions);
 
   // 各問題の選択肢をシャッフル
   return shuffledQuestions.map((q: any) => ({
