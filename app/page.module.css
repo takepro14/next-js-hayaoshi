@@ -547,13 +547,14 @@
   color: #2563eb;
   border: 2px solid #2563eb;
   padding: 16px 24px;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .modeButton:hover {
