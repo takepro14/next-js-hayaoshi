@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 export function useSound() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const bgmRef = useRef<HTMLAudioElement | null>(null);
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -43,8 +43,8 @@ export function useSound() {
     if (!bgmRef.current) return;
     
     if (soundEnabled) {
-      bgmRef.current.play().catch((error) => {
-        console.log('BGMの再生に失敗しました:', error);
+      bgmRef.current.play().catch(() => {
+        // エラーは無視する（ユーザー操作が必要な場合がある）
       });
     } else {
       bgmRef.current.pause();
@@ -53,17 +53,20 @@ export function useSound() {
 
   const startBGM = useCallback(() => {
     if (!soundEnabled || !bgmRef.current) return;
-    bgmRef.current.play().catch((error) => {
-      console.log('BGMの再生に失敗しました:', error);
-    });
+    // 既に再生中の場合は何もしない
+    if (bgmRef.current.paused) {
+      bgmRef.current.play().catch(() => {
+        // エラーは無視する（既にユーザー操作時なので通常は成功する）
+      });
+    }
   }, [soundEnabled]);
 
   const toggleSound = () => {
     const newSoundEnabled = !soundEnabled;
     setSoundEnabled(newSoundEnabled);
     if (newSoundEnabled && bgmRef.current) {
-      bgmRef.current.play().catch((error) => {
-        console.log('BGMの再生に失敗しました:', error);
+      bgmRef.current.play().catch(() => {
+        // エラーは無視する
       });
     } else if (!newSoundEnabled && bgmRef.current) {
       bgmRef.current.pause();
@@ -73,16 +76,16 @@ export function useSound() {
   const playCorrectSound = useCallback(() => {
     if (!soundEnabled || !correctSoundRef.current) return;
     correctSoundRef.current.currentTime = 0;
-    correctSoundRef.current.play().catch((error) => {
-      console.log('効果音の再生に失敗しました:', error);
+    correctSoundRef.current.play().catch(() => {
+      // エラーは無視する
     });
   }, [soundEnabled]);
 
   const playIncorrectSound = useCallback(() => {
     if (!soundEnabled || !incorrectSoundRef.current) return;
     incorrectSoundRef.current.currentTime = 0;
-    incorrectSoundRef.current.play().catch((error) => {
-      console.log('効果音の再生に失敗しました:', error);
+    incorrectSoundRef.current.play().catch(() => {
+      // エラーは無視する
     });
   }, [soundEnabled]);
 

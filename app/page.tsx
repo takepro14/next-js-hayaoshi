@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Question, AnswerResult } from './types';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Question, AnswerResult, GameMode, GameConfig } from './types';
 import { useSound } from './hooks/useSound';
 import LoadingScreen from './components/LoadingScreen';
 import StartScreen from './components/StartScreen';
@@ -15,7 +15,7 @@ export default function Home() {
   const [userAnswer, setUserAnswer] = useState('');
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
-  const [selectedTimeLimit, setSelectedTimeLimit] = useState<number | null>(null);
+  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [isGameActive, setIsGameActive] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -30,13 +30,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isGameActive && timeLeft > 0) {
+    // タイムアタックモードの場合のみタイマーを動作させる
+    if (isGameActive && gameConfig?.mode === 'timeAttack' && timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (isGameActive && timeLeft === 0) {
+    } else if (isGameActive && gameConfig?.mode === 'timeAttack' && timeLeft === 0) {
       endGame();
     }
-  }, [isGameActive, timeLeft]);
+  }, [isGameActive, timeLeft, gameConfig]);
 
   // 問題が変わったときに状態をリセット
   useEffect(() => {
@@ -71,15 +72,25 @@ export default function Home() {
     }
   };
 
-  const selectTimeLimit = (seconds: number | null) => {
-    setSelectedTimeLimit(seconds);
+  const selectMode = (mode: GameMode | null, timeLimit?: number) => {
+    if (mode === null) {
+      setGameConfig(null);
+      return;
+    }
+    if (mode === 'timeAttack' && timeLimit) {
+      setGameConfig({ mode, timeLimit });
+    } else if (mode === 'timeAttack') {
+      setGameConfig({ mode });
+    } else {
+      setGameConfig({ mode });
+    }
   };
 
   const startGame = () => {
-    if (questions.length === 0 || selectedTimeLimit === null) return;
+    if (questions.length === 0 || !gameConfig) return;
     setCurrentQuestionIndex(0);
     setScore(0);
-    setTimeLeft(selectedTimeLimit);
+    setTimeLeft(gameConfig.timeLimit || 0);
     setIsGameActive(true);
     setUserAnswer('');
     setIsCorrect(null);
@@ -96,7 +107,7 @@ export default function Home() {
   const handleQuit = () => {
     if (window.confirm('ゲームを中断しますか？\n現在のスコアは失われます。')) {
       setIsGameActive(false);
-      setSelectedTimeLimit(null);
+      setGameConfig(null);
       setShowResult(false);
       setCurrentQuestionIndex(0);
       setScore(0);
@@ -139,24 +150,44 @@ export default function Home() {
         nextQuestion();
       }, 3000);
     } else {
-      setTimeout(() => {
-        nextQuestion();
-      }, 3500);
+      // サドンデスモードの場合、不正解で即終了
+      if (gameConfig?.mode === 'suddenDeath') {
+        setTimeout(() => {
+          endGame();
+        }, 3500);
+      } else {
+        setTimeout(() => {
+          nextQuestion();
+        }, 3500);
+      }
     }
   };
 
   const nextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    // エンドレスモードの場合は問題をループ
+    if (gameConfig?.mode === 'endless') {
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        // 問題が終わったら最初に戻る
+        setCurrentQuestionIndex(0);
+      }
       setUserAnswer('');
       setIsCorrect(null);
     } else {
-      endGame();
+      // タイムアタックモードとサドンデスモードは通常通り
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setUserAnswer('');
+        setIsCorrect(null);
+      } else {
+        endGame();
+      }
     }
   };
 
   const handleRestart = () => {
-    setSelectedTimeLimit(null);
+    setGameConfig(null);
     setShowResult(false);
     setShowDetailResult(false);
   };
@@ -189,9 +220,9 @@ export default function Home() {
   if (!isGameActive) {
     return (
       <StartScreen
-        selectedTimeLimit={selectedTimeLimit}
+        gameConfig={gameConfig}
         soundEnabled={soundEnabled}
-        onSelectTimeLimit={selectTimeLimit}
+        onSelectMode={selectMode}
         onStartGame={startGame}
         onToggleSound={toggleSound}
         onStartBGM={startBGM}
@@ -206,11 +237,12 @@ export default function Home() {
       currentQuestion={currentQuestion}
       currentQuestionIndex={currentQuestionIndex}
       totalQuestions={questions.length}
-      timeLeft={timeLeft}
+      timeLeft={gameConfig?.mode === 'timeAttack' ? timeLeft : null}
       score={score}
       userAnswer={userAnswer}
       isCorrect={isCorrect}
       soundEnabled={soundEnabled}
+      gameMode={gameConfig?.mode || 'timeAttack'}
       onAnswerClick={handleAnswerClick}
       onQuit={handleQuit}
       onToggleSound={toggleSound}

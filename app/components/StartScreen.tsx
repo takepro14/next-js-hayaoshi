@@ -1,40 +1,104 @@
+import { GameMode } from '../types';
 import styles from '../page.module.css';
 
 interface StartScreenProps {
-  selectedTimeLimit: number | null;
+  gameConfig: { mode: GameMode; timeLimit?: number } | null;
   soundEnabled: boolean;
-  onSelectTimeLimit: (seconds: number | null) => void;
+  onSelectMode: (mode: GameMode, timeLimit?: number) => void;
   onStartGame: () => void;
   onToggleSound: () => void;
   onStartBGM: () => void;
 }
 
 export default function StartScreen({
-  selectedTimeLimit,
+  gameConfig,
   soundEnabled,
-  onSelectTimeLimit,
+  onSelectMode,
   onStartGame,
   onToggleSound,
   onStartBGM,
 }: StartScreenProps) {
-  return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-          <button
-            className={styles.soundToggle}
-            onClick={onToggleSound}
-            aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
-            title={soundEnabled ? '音声をオフ' : '音声をオン'}
-          >
-            {soundEnabled ? '🔊' : '🔇'}
-          </button>
+  if (gameConfig === null) {
+    // モード選択画面
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              className={styles.soundToggle}
+              onClick={() => {
+                onStartBGM();
+                onToggleSound();
+              }}
+              aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
+              title={soundEnabled ? '音声をオフ' : '音声をオン'}
+            >
+              {soundEnabled ? '🔊' : '🔇'}
+            </button>
+          </div>
+          <h1 className={styles.title}>横文字に強くなろう</h1>
+          <p className={styles.description}>
+            モードを選択して、できるだけ多くの横文字の意味を当てよう！
+          </p>
+          <div className={styles.modeSelection}>
+            <h3 className={styles.modeTitle}>モードを選択</h3>
+            <div className={styles.modeButtons}>
+              <button
+                className={styles.modeButton}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectMode('timeAttack');
+                }}
+              >
+                ⏱️ タイムアタック
+              </button>
+              <button
+                className={styles.modeButton}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectMode('suddenDeath');
+                }}
+              >
+                ⚡ サドンデス
+              </button>
+              <button
+                className={styles.modeButton}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectMode('endless');
+                }}
+              >
+                ♾️ エンドレス
+              </button>
+            </div>
+          </div>
         </div>
-        <h1 className={styles.title}>横文字に強くなろう</h1>
-        <p className={styles.description}>
-          制限時間を選択して、できるだけ多くの横文字の意味を当てよう！
-        </p>
-        {selectedTimeLimit === null ? (
+      </div>
+    );
+  }
+
+  if (gameConfig.mode === 'timeAttack' && !gameConfig.timeLimit) {
+    // タイムアタックモードの時間選択
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <button
+              className={styles.soundToggle}
+              onClick={() => {
+                onStartBGM();
+                onToggleSound();
+              }}
+              aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
+              title={soundEnabled ? '音声をオフ' : '音声をオン'}
+            >
+              {soundEnabled ? '🔊' : '🔇'}
+            </button>
+          </div>
+          <h1 className={styles.title}>タイムアタック</h1>
+          <p className={styles.description}>
+            制限時間内にできるだけ多くの問題に答えよう！
+          </p>
           <div className={styles.modeSelection}>
             <h3 className={styles.modeTitle}>時間制限を選択</h3>
             <div className={styles.modeButtons}>
@@ -42,7 +106,7 @@ export default function StartScreen({
                 className={styles.modeButton}
                 onClick={() => {
                   onStartBGM();
-                  onSelectTimeLimit(30);
+                  onSelectMode('timeAttack', 30);
                 }}
               >
                 30秒
@@ -51,7 +115,7 @@ export default function StartScreen({
                 className={styles.modeButton}
                 onClick={() => {
                   onStartBGM();
-                  onSelectTimeLimit(60);
+                  onSelectMode('timeAttack', 60);
                 }}
               >
                 1分
@@ -60,31 +124,84 @@ export default function StartScreen({
                 className={styles.modeButton}
                 onClick={() => {
                   onStartBGM();
-                  onSelectTimeLimit(120);
+                  onSelectMode('timeAttack', 120);
                 }}
               >
                 2分
               </button>
             </div>
+            <button
+              className={styles.buttonSecondary}
+              onClick={() => onSelectMode(null as any, undefined)}
+              style={{ marginTop: '16px' }}
+            >
+              モード選択に戻る
+            </button>
           </div>
-        ) : (
-          <div className={styles.modeConfirmation}>
-            <p className={styles.modeInfo}>
-              選択した時間: <strong>{selectedTimeLimit}秒</strong>
-            </p>
-            <div className={styles.modeActions}>
-              <button className={styles.button} onClick={onStartGame}>
-                ゲーム開始
-              </button>
-              <button
-                className={styles.buttonSecondary}
-                onClick={() => onSelectTimeLimit(null)}
-              >
-                時間を変更
-              </button>
-            </div>
+        </div>
+      </div>
+    );
+  }
+
+  // モード確認画面
+  const getModeName = () => {
+    switch (gameConfig.mode) {
+      case 'timeAttack':
+        return '⏱️ タイムアタック';
+      case 'suddenDeath':
+        return '⚡ サドンデス';
+      case 'endless':
+        return '♾️ エンドレス';
+    }
+  };
+
+  const getModeDescription = () => {
+    switch (gameConfig.mode) {
+      case 'timeAttack':
+        return `制限時間: ${gameConfig.timeLimit}秒`;
+      case 'suddenDeath':
+        return '1問でも間違えたら終了！全問正解を目指そう！';
+      case 'endless':
+        return '時間制限なし！何問でも挑戦できる練習モード';
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <button
+            className={styles.soundToggle}
+            onClick={() => {
+              onStartBGM();
+              onToggleSound();
+            }}
+            aria-label={soundEnabled ? '音声をオフ' : '音声をオン'}
+            title={soundEnabled ? '音声をオフ' : '音声をオン'}
+          >
+            {soundEnabled ? '🔊' : '🔇'}
+          </button>
+        </div>
+        <h1 className={styles.title}>{getModeName()}</h1>
+        <p className={styles.description}>
+          {getModeDescription()}
+        </p>
+        <div className={styles.modeConfirmation}>
+          <div className={styles.modeActions}>
+            <button className={styles.button} onClick={() => {
+              onStartBGM();
+              onStartGame();
+            }}>
+              ゲーム開始
+            </button>
+            <button
+              className={styles.buttonSecondary}
+              onClick={() => onSelectMode(null as any, undefined)}
+            >
+              モードを変更
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

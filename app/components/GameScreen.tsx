@@ -6,11 +6,12 @@ interface GameScreenProps {
   currentQuestion: Question;
   currentQuestionIndex: number;
   totalQuestions: number;
-  timeLeft: number;
+  timeLeft: number | null;
   score: number;
   userAnswer: string;
   isCorrect: boolean | null;
   soundEnabled: boolean;
+  gameMode: 'timeAttack' | 'suddenDeath' | 'endless';
   onAnswerClick: (answer: string) => void;
   onQuit: () => void;
   onToggleSound: () => void;
@@ -25,6 +26,7 @@ export default function GameScreen({
   userAnswer,
   isCorrect,
   soundEnabled,
+  gameMode,
   onAnswerClick,
   onQuit,
   onToggleSound,
@@ -47,7 +49,15 @@ export default function GameScreen({
     <div className={styles.container}>
       <div className={`${styles.card} ${isCorrect === true ? styles.cardCorrect : isCorrect === false ? styles.cardIncorrect : ''}`}>
         <div className={styles.header}>
-          <div className={styles.timer}>残り時間: {timeLeft}秒</div>
+          {timeLeft !== null && (
+            <div className={styles.timer}>残り時間: {timeLeft}秒</div>
+          )}
+          {timeLeft === null && gameMode === 'endless' && (
+            <div className={styles.timer}>エンドレスモード</div>
+          )}
+          {timeLeft === null && gameMode === 'suddenDeath' && (
+            <div className={styles.timer}>サドンデスモード</div>
+          )}
           <div className={`${styles.score} ${isCorrect === true ? styles.scoreIncrease : ''}`}>
             スコア: {score}
           </div>

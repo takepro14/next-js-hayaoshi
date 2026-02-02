@@ -19,3 +19,10 @@ export interface AnswerResult {
   meaning: string;
   example?: string;
 }
+
+export type GameMode = 'timeAttack' | 'suddenDeath' | 'endless';
+
+export interface GameConfig {
+  mode: GameMode;
+  timeLimit?: number; // タイムアタックモードの場合のみ
+}
