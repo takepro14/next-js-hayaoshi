@@ -554,6 +554,27 @@
   transition: all 0.15s ease;
   font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
   letter-spacing: 0.05em;
+  width: 100%;
+  text-align: center;
+}
+
+.modeButtonContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.modeButtonTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.modeButtonDescription {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
   white-space: nowrap;
 }
 
@@ -562,6 +583,10 @@
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+.modeButton:hover .modeButtonDescription {
+  opacity: 1;
 }
 
 .modeButton:active {
@@ -763,6 +788,14 @@
   .modeButton {
     padding: 14px 20px;
     font-size: 1rem;
+  }
+
+  .modeButtonTitle {
+    font-size: 0.9375rem;
+  }
+
+  .modeButtonDescription {
+    font-size: 0.6875rem;
   }
 
   .modeActions {

@@ -54,7 +54,10 @@ export default function StartScreen({
                   onSelectMode('timeAttack');
                 }}
               >
-                ⏱️ タイムアタック
+                <div className={styles.modeButtonContent}>
+                  <div className={styles.modeButtonTitle}>⏱️ タイムアタック</div>
+                  <div className={styles.modeButtonDescription}>制限時間内に回答</div>
+                </div>
               </button>
               <button
                 className={styles.modeButton}
@@ -63,7 +66,10 @@ export default function StartScreen({
                   onSelectMode('suddenDeath');
                 }}
               >
-                ⚡ サドンデス
+                <div className={styles.modeButtonContent}>
+                  <div className={styles.modeButtonTitle}>⚡ サドンデス</div>
+                  <div className={styles.modeButtonDescription}>1問でも間違えたら終了</div>
+                </div>
               </button>
               <button
                 className={styles.modeButton}
@@ -72,7 +78,10 @@ export default function StartScreen({
                   onSelectMode('endless');
                 }}
               >
-                ♾️ エンドレス
+                <div className={styles.modeButtonContent}>
+                  <div className={styles.modeButtonTitle}>♾️ エンドレス</div>
+                  <div className={styles.modeButtonDescription}>時間制限なしの練習</div>
+                </div>
               </button>
             </div>
           </div>
