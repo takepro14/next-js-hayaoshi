@@ -113,7 +113,31 @@ export default function StartScreen({
             制限時間内にできるだけ多くの問題に答えよう！
           </p>
           <div className={styles.modeSelection}>
-            <h3 className={styles.modeTitle}>時間制限を選択</h3>
+            <h3 className={styles.modeTitle}>カテゴリーを選択（オプション）</h3>
+            <div className={styles.modeButtons}>
+              <button
+                className={`${styles.modeButton} ${!gameConfig.selectedCategory ? styles.modeButtonActive : ''}`}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectCategory(null);
+                }}
+              >
+                すべて
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`${styles.modeButton} ${gameConfig.selectedCategory === category ? styles.modeButtonActive : ''}`}
+                  onClick={() => {
+                    onStartBGM();
+                    onSelectCategory(category);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+            <h3 className={styles.modeTitle} style={{ marginTop: '32px' }}>時間制限を選択</h3>
             <div className={styles.modeButtons}>
               <button
                 className={styles.modeButton}
