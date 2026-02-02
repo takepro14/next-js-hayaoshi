@@ -1,6 +1,8 @@
 import { AnswerResult } from '../types';
 import styles from '../page.module.css';
 
+// categoryスタイルをインポートするために、page.module.cssから読み込む
+
 interface ResultDetailProps {
   answerResults: AnswerResult[];
   onBackToSummary: () => void;
@@ -33,6 +35,11 @@ export default function ResultDetail({
                     <span className={styles.resultNumber}>Q{index + 1}</span>
                     <span className={styles.resultStatusCorrect}>✓ 正解</span>
                   </div>
+                  {result.category && (
+                    <div className={styles.category} style={{ marginBottom: '8px' }}>
+                      {result.category}
+                    </div>
+                  )}
                   <p className={styles.resultQuestion}>{result.question}</p>
                   <div className={styles.resultAnswer}>
                     <strong>あなたの回答:</strong> {result.userAnswer}
@@ -56,6 +63,11 @@ export default function ResultDetail({
                     <span className={styles.resultNumber}>Q{correctAnswers.length + index + 1}</span>
                     <span className={styles.resultStatusIncorrect}>✗ 不正解</span>
                   </div>
+                  {result.category && (
+                    <div className={styles.category} style={{ marginBottom: '8px' }}>
+                      {result.category}
+                    </div>
+                  )}
                   <p className={styles.resultQuestion}>{result.question}</p>
                   <div className={styles.resultAnswer}>
                     <strong>あなたの回答:</strong> <span className={styles.incorrectAnswer}>{result.userAnswer}</span>

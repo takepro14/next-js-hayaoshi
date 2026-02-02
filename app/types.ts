@@ -6,6 +6,7 @@ export interface Question {
   etymology?: string;
   meaning: string;
   example?: string;
+  category?: string;
 }
 
 export interface AnswerResult {
@@ -18,6 +19,7 @@ export interface AnswerResult {
   etymology?: string;
   meaning: string;
   example?: string;
+  category?: string;
 }
 
 export type GameMode = 'timeAttack' | 'suddenDeath' | 'endless';
@@ -25,4 +27,5 @@ export type GameMode = 'timeAttack' | 'suddenDeath' | 'endless';
 export interface GameConfig {
   mode: GameMode;
   timeLimit?: number; // タイムアタックモードの場合のみ
+  selectedCategory?: string; // 選択されたカテゴリー（undefinedの場合は全カテゴリー）
 }

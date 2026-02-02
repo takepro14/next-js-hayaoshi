@@ -82,11 +82,16 @@ export default function GameScreen({
             中断
           </button>
         </div>
-        <h2 className={styles.question}>{currentQuestion.question}</h2>
+        {currentQuestion?.category && (
+          <div className={styles.category}>
+            {currentQuestion.category}
+          </div>
+        )}
+        <h2 className={styles.question}>{currentQuestion?.question}</h2>
         <div className={styles.choicesContainer}>
-          {currentQuestion.choices.map((choice, index) => {
+          {currentQuestion?.choices?.map((choice, index) => {
             const isSelected = userAnswer === choice;
-            const isCorrectChoice = choice === currentQuestion.answer;
+            const isCorrectChoice = choice === currentQuestion?.answer;
             let buttonClass = styles.choiceButton;
 
             if (isCorrect !== null) {
@@ -126,36 +131,36 @@ export default function GameScreen({
                 <>
                   <p className={`${styles.correct} ${styles.correctAnimation}`}>正解！</p>
                   <div ref={detailInfoRef} className={styles.detailInfo}>
-                    {currentQuestion.etymology && (
+                    {currentQuestion?.etymology && (
                       <div className={styles.detailItem}>
-                        <strong>【語源】</strong> {currentQuestion.etymology}
+                        <strong>【語源】</strong> {currentQuestion?.etymology}
                       </div>
                     )}
                     <div className={styles.detailItem}>
-                      <strong>【意味】</strong> {currentQuestion.meaning}
+                      <strong>【意味】</strong> {currentQuestion?.meaning}
                     </div>
-                    {currentQuestion.example && (
+                    {currentQuestion?.example && (
                       <div className={styles.detailItem}>
-                        <strong>【例文】</strong> {currentQuestion.example}
+                        <strong>【例文】</strong> {currentQuestion?.example}
                       </div>
                     )}
                   </div>
                 </>
               ) : (
                 <>
-                  <p className={styles.incorrect}>不正解。正解は「{currentQuestion.answer}」です。</p>
+                  <p className={styles.incorrect}>不正解。正解は「{currentQuestion?.answer}」です。</p>
                   <div ref={detailInfoRef} className={styles.detailInfo}>
-                    {currentQuestion.etymology && (
+                    {currentQuestion?.etymology && (
                       <div className={styles.detailItem}>
-                        <strong>【語源】</strong> {currentQuestion.etymology}
+                        <strong>【語源】</strong> {currentQuestion?.etymology}
                       </div>
                     )}
                     <div className={styles.detailItem}>
-                      <strong>【意味】</strong> {currentQuestion.meaning}
+                      <strong>【意味】</strong> {currentQuestion?.meaning}
                     </div>
-                    {currentQuestion.example && (
+                    {currentQuestion?.example && (
                       <div className={styles.detailItem}>
-                        <strong>【例文】</strong> {currentQuestion.example}
+                        <strong>【例文】</strong> {currentQuestion?.example}
                       </div>
                     )}
                   </div>

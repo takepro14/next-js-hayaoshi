@@ -26,14 +26,15 @@ async function seed() {
 
     for (const q of questions) {
       await connection.query(
-        'INSERT INTO questions (question, answer, choices, etymology, meaning, example) VALUES (?, ?, ?, ?, ?, ?)',
+        'INSERT INTO questions (question, answer, choices, etymology, meaning, example, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [
           q.question,
           q.answer,
           JSON.stringify(q.choices),
           q.etymology,
           q.meaning,
-          q.example
+          q.example,
+          q.category || null
         ]
       );
     }

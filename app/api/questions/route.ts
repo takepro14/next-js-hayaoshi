@@ -41,7 +41,8 @@ function loadQuestionsFromJson() {
     choices: q.choices,
     etymology: q.etymology,
     meaning: q.meaning,
-    example: q.example
+    example: q.example,
+    category: q.category
   }));
 
   // 問題をシャッフル
@@ -54,10 +55,10 @@ function loadQuestionsFromJson() {
   }));
 }
 
-// データベースから問題を読み込む
+  // データベースから問題を読み込む
 async function loadQuestionsFromDB() {
   const [rows] = (await pool.query(
-    'SELECT id, question, answer, choices, etymology, meaning, example FROM questions ORDER BY RAND()'
+    'SELECT id, question, answer, choices, etymology, meaning, example, category FROM questions ORDER BY RAND()'
   )) as any[];
 
   // JSON形式のchoicesをパースしてシャッフル

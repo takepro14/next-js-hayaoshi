@@ -10,6 +10,7 @@ import ResultSummary from './components/ResultSummary';
 import ResultDetail from './components/ResultDetail';
 
 export default function Home() {
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -64,6 +65,7 @@ export default function Home() {
     try {
       const response = await fetch('/api/questions');
       const data = await response.json();
+      setAllQuestions(data);
       setQuestions(data);
       setIsLoading(false);
     } catch (error) {
@@ -72,22 +74,52 @@ export default function Home() {
     }
   };
 
+  // カテゴリーに基づいて問題をフィルタリング
+  useEffect(() => {
+    if (gameConfig?.selectedCategory) {
+      const filtered = allQuestions.filter(q => q.category === gameConfig.selectedCategory);
+      setQuestions(filtered);
+    } else {
+      setQuestions(allQuestions);
+    }
+    // ゲームがアクティブでない場合のみインデックスをリセット
+    if (!isGameActive) {
+      setCurrentQuestionIndex(0);
+    }
+  }, [gameConfig?.selectedCategory, allQuestions, isGameActive]);
+
   const selectMode = (mode: GameMode | null, timeLimit?: number) => {
     if (mode === null) {
       setGameConfig(null);
       return;
     }
     if (mode === 'timeAttack' && timeLimit) {
-      setGameConfig({ mode, timeLimit });
+      setGameConfig({ mode, timeLimit, selectedCategory: gameConfig?.selectedCategory });
     } else if (mode === 'timeAttack') {
-      setGameConfig({ mode });
+      setGameConfig({ mode, selectedCategory: gameConfig?.selectedCategory });
     } else {
-      setGameConfig({ mode });
+      setGameConfig({ mode, selectedCategory: gameConfig?.selectedCategory });
+    }
+  };
+
+  const selectCategory = (category: string | null) => {
+    if (gameConfig) {
+      setGameConfig({ ...gameConfig, selectedCategory: category || undefined });
     }
   };
 
   const startGame = () => {
-    if (questions.length === 0 || !gameConfig) return;
+    // カテゴリーに基づいて問題をフィルタリング
+    const filteredQuestions = gameConfig?.selectedCategory
+      ? allQuestions.filter(q => q.category === gameConfig.selectedCategory)
+      : allQuestions;
+    
+    if (filteredQuestions.length === 0 || !gameConfig) {
+      alert('選択されたカテゴリーに問題がありません。');
+      return;
+    }
+    
+    setQuestions(filteredQuestions);
     setCurrentQuestionIndex(0);
     setScore(0);
     setTimeLeft(gameConfig.timeLimit || 0);
@@ -141,6 +173,7 @@ export default function Home() {
       etymology: currentQuestion.etymology,
       meaning: currentQuestion.meaning,
       example: currentQuestion.example,
+      category: currentQuestion.category,
     };
     setAnswerResults(prev => [...prev, answerResult]);
 
@@ -217,12 +250,17 @@ export default function Home() {
     );
   }
 
+  // 利用可能なカテゴリー一覧を取得
+  const categories = Array.from(new Set(allQuestions.map(q => q.category).filter(Boolean))) as string[];
+
   if (!isGameActive) {
     return (
       <StartScreen
         gameConfig={gameConfig}
         soundEnabled={soundEnabled}
+        categories={categories}
         onSelectMode={selectMode}
+        onSelectCategory={selectCategory}
         onStartGame={startGame}
         onToggleSound={toggleSound}
         onStartBGM={startBGM}
@@ -231,6 +269,11 @@ export default function Home() {
   }
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  // currentQuestionが存在しない場合はローディング画面を表示
+  if (!currentQuestion) {
+    return <LoadingScreen />;
+  }
 
   return (
     <GameScreen

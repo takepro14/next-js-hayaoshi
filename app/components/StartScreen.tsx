@@ -2,9 +2,11 @@ import { GameMode } from '../types';
 import styles from '../page.module.css';
 
 interface StartScreenProps {
-  gameConfig: { mode: GameMode; timeLimit?: number } | null;
+  gameConfig: { mode: GameMode; timeLimit?: number; selectedCategory?: string } | null;
   soundEnabled: boolean;
+  categories: string[];
   onSelectMode: (mode: GameMode, timeLimit?: number) => void;
+  onSelectCategory: (category: string | null) => void;
   onStartGame: () => void;
   onToggleSound: () => void;
   onStartBGM: () => void;
@@ -13,7 +15,9 @@ interface StartScreenProps {
 export default function StartScreen({
   gameConfig,
   soundEnabled,
+  categories,
   onSelectMode,
+  onSelectCategory,
   onStartGame,
   onToggleSound,
   onStartBGM,
@@ -187,6 +191,32 @@ export default function StartScreen({
           {getModeDescription()}
         </p>
         <div className={styles.modeConfirmation}>
+          <div className={styles.modeSelection}>
+            <h3 className={styles.modeTitle}>カテゴリーを選択（オプション）</h3>
+            <div className={styles.modeButtons}>
+              <button
+                className={`${styles.modeButton} ${!gameConfig.selectedCategory ? styles.modeButtonActive : ''}`}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectCategory(null);
+                }}
+              >
+                すべて
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`${styles.modeButton} ${gameConfig.selectedCategory === category ? styles.modeButtonActive : ''}`}
+                  onClick={() => {
+                    onStartBGM();
+                    onSelectCategory(category);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className={styles.modeActions}>
             <button className={styles.button} onClick={() => {
               onStartBGM();

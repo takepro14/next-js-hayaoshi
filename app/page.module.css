@@ -282,6 +282,28 @@
   letter-spacing: 0.05em;
 }
 
+.category {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-family: 'Rajdhani', 'JetBrains Mono', sans-serif;
+  letter-spacing: 0.05em;
+  border: 1px solid #dbeafe;
+}
+
+@media (max-width: 768px) {
+  .category {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    margin-bottom: 12px;
+  }
+}
+
 .quitButton {
   background: #ffffff;
   color: #dc2626;
@@ -543,6 +565,18 @@
 
 .modeButton:active {
   transform: translateY(0);
+}
+
+.modeButtonActive {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  font-weight: 600;
+}
+
+.modeButtonActive:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
 }
 
 .modeConfirmation {

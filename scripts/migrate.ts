@@ -30,6 +30,7 @@ async function migrate() {
         etymology TEXT,
         meaning TEXT NOT NULL,
         example TEXT,
+        category VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
