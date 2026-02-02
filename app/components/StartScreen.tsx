@@ -6,6 +6,7 @@ interface StartScreenProps {
   onSelectTimeLimit: (seconds: number | null) => void;
   onStartGame: () => void;
   onToggleSound: () => void;
+  onStartBGM: () => void;
 }
 
 export default function StartScreen({
@@ -14,6 +15,7 @@ export default function StartScreen({
   onSelectTimeLimit,
   onStartGame,
   onToggleSound,
+  onStartBGM,
 }: StartScreenProps) {
   return (
     <div className={styles.container}>
@@ -38,19 +40,28 @@ export default function StartScreen({
             <div className={styles.modeButtons}>
               <button
                 className={styles.modeButton}
-                onClick={() => onSelectTimeLimit(30)}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectTimeLimit(30);
+                }}
               >
                 30秒
               </button>
               <button
                 className={styles.modeButton}
-                onClick={() => onSelectTimeLimit(60)}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectTimeLimit(60);
+                }}
               >
                 1分
               </button>
               <button
                 className={styles.modeButton}
-                onClick={() => onSelectTimeLimit(120)}
+                onClick={() => {
+                  onStartBGM();
+                  onSelectTimeLimit(120);
+                }}
               >
                 2分
               </button>

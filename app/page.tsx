@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Question, AnswerResult } from './types';
 import { useSound } from './hooks/useSound';
 import LoadingScreen from './components/LoadingScreen';
@@ -23,7 +23,7 @@ export default function Home() {
   const [answerResults, setAnswerResults] = useState<AnswerResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { soundEnabled, toggleSound, playCorrectSound, playIncorrectSound } = useSound();
+  const { soundEnabled, toggleSound, startBGM, playCorrectSound, playIncorrectSound } = useSound();
 
   useEffect(() => {
     fetchQuestions();
@@ -45,15 +45,19 @@ export default function Home() {
   }, [currentQuestionIndex]);
 
   // 正解/不正解時に効果音を再生
+  const prevIsCorrectRef = useRef<boolean | null>(null);
   useEffect(() => {
-    if (isCorrect === null) return;
-    
-    if (isCorrect) {
-      playCorrectSound();
-    } else {
-      playIncorrectSound();
+    // 前回がnullで、今回がtrue/falseに変わった時だけ再生
+    if (prevIsCorrectRef.current === null && isCorrect !== null) {
+      if (isCorrect) {
+        playCorrectSound();
+      } else {
+        playIncorrectSound();
+      }
     }
-  }, [isCorrect, playCorrectSound, playIncorrectSound]);
+    prevIsCorrectRef.current = isCorrect;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCorrect]);
 
   const fetchQuestions = async () => {
     try {
@@ -190,6 +194,7 @@ export default function Home() {
         onSelectTimeLimit={selectTimeLimit}
         onStartGame={startGame}
         onToggleSound={toggleSound}
+        onStartBGM={startBGM}
       />
     );
   }
